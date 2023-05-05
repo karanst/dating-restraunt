@@ -12,6 +12,8 @@ final Uri walletTransactionsApi = Uri.parse(baseUrl + 'restaurant_transaction');
 final Uri getTableTypesApi = Uri.parse(baseUrl + 'get_table_types');
 final Uri addRestroTablesApi = Uri.parse(baseUrl + 'add_tables');
 final Uri getTablesListApi = Uri.parse(baseUrl + 'table_lists');
+final Uri restroSignupApi = Uri.parse(baseUrl + 'register_restaurent');
+final Uri deleteTablesApi = Uri.parse(baseUrl + 'delete_table');
 ///NEW APIS/////////////////
 
 final Uri getUserLoginApi = Uri.parse(baseUrl + 'login');

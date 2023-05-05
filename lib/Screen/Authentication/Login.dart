@@ -8,6 +8,7 @@ import 'package:eshopmultivendor/Helper/Session.dart';
 import 'package:eshopmultivendor/Helper/String.dart';
 import 'package:eshopmultivendor/Helper/custom_textfield.dart';
 import 'package:eshopmultivendor/Screen/Authentication/VerifyOTP.dart';
+import 'package:eshopmultivendor/Screen/Authentication/restraunt_signup.dart';
 import 'package:eshopmultivendor/Screen/TermFeed/Privacy_Policy.dart';
 import 'package:eshopmultivendor/Screen/TermFeed/Terms_Conditions.dart';
 import 'package:flutter/material.dart';
@@ -535,6 +536,107 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                         width: double.infinity,
                         height: double.infinity,
                       ),
+                      // Form(
+                      //   key: _formkey,
+                      //   child: ScrollConfiguration(
+                      //       behavior: MyBehavior(),
+                      //       // child: ConstrainedBox(
+                      //       //   constraints: BoxConstraints(
+                      //       //     maxHeight: MediaQuery.of(context).size.height * 2,
+                      //       //   ),
+                      //       child:  Padding(
+                      //         padding: const EdgeInsets.only(left: 15.0, right: 15),
+                      //         child: Column(
+                      //           crossAxisAlignment: CrossAxisAlignment.start,
+                      //           children: [
+                      //             // Padding(
+                      //             //   padding: const EdgeInsets.only(top: 80.0, bottom: 40),
+                      //             //   child: Container(
+                      //             //     width: 200,
+                      //             //     // height: MediaQuery.of(context).size.height,
+                      //             //     child: Image.asset(
+                      //             //       'assets/images/homelogo.png',
+                      //             //       // 'assets/images/login_logo.png',
+                      //             //       fit: BoxFit.fill,
+                      //             //     ),
+                      //             //   ),
+                      //             // ),
+                      //             SizedBox(
+                      //               height: MediaQuery.of(context).size.height * 0.10,
+                      //             ),
+                      //             Padding(
+                      //               padding: EdgeInsets.only(left: 15, bottom: 20),
+                      //               child:  Text(getTranslated(context, "LOGIN")!,
+                      //                   style: Theme.of(context)
+                      //                       .textTheme
+                      //                       .titleLarge!
+                      //                       .copyWith(color: primary,
+                      //                       fontSize: 30,
+                      //                       fontWeight: FontWeight.bold)),
+                      //             ),
+                      //             AuthTextField(
+                      //               obsecureText: false,
+                      //               controller: mobileController,
+                      //               hintText: "Mobile Number",
+                      //               keyboardtype: TextInputType.number,
+                      //               length: 10,
+                      //             ),
+                      //
+                      //             Padding(
+                      //               padding: const EdgeInsets.only(top: 30.0, left: 8, right: 8, bottom: 15),
+                      //               child: ElevatedButton(
+                      //                 onPressed: () {
+                      //                   setState(() {
+                      //                     loading = true;
+                      //                   });
+                      //                   if(mobileController.text.isNotEmpty) {
+                      //                     sendOtp();
+                      //                   }else{
+                      //                     setState(() {
+                      //                       loading = false;
+                      //                     });
+                      //                     Fluttertoast.showToast(msg: "Please enter a valid mobile number!");
+                      //                   }
+                      //                 },
+                      //                 child: loading ?
+                      //                 Container(
+                      //                   width: 30,
+                      //                   height: 30,
+                      //                   child: Center(
+                      //                     child: CircularProgressIndicator(
+                      //                       color: Colors.white,
+                      //                     ),
+                      //                   ),
+                      //                 )
+                      //                     : Text(
+                      //                   "Send OTP",
+                      //                   style:
+                      //                   TextStyle(color: white, fontWeight: FontWeight.w500, fontSize: 18),
+                      //                 ),
+                      //                 style: ElevatedButton.styleFrom(
+                      //                     primary: primary,
+                      //                     shape: StadiumBorder(),
+                      //                     fixedSize: Size(MediaQuery.of(context).size.width, 50)),
+                      //               ),
+                      //             ),
+                      //
+                      //             Row(
+                      //               mainAxisAlignment: MainAxisAlignment.center,
+                      //               children: [
+                      //                 Text("Don't have an account?  ", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),),
+                      //                 TextButton(onPressed: (){
+                      //                   Navigator.push(context, MaterialPageRoute(builder: (context) => RestroSignUp()));
+                      //                 }, child: Text("Sign Up", style: TextStyle(
+                      //                     color: primary,
+                      //                     fontSize: 16, fontWeight: FontWeight.w600
+                      //                 ),))
+                      //               ],
+                      //             )
+                      //           ],
+                      //         ),
+                      //       )
+                      //   ),
+                      // ),
                       getLoginBody(),
                       getLogo(),
                     ],
@@ -650,13 +752,45 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                           fontSize: 30,
                           fontWeight: FontWeight.bold)),
                 ),
-                      AuthTextField(
-                        obsecureText: false,
-                        controller: mobileController,
-                        hintText: "Mobile Number",
-                        keyboardtype: TextInputType.number,
-                        length: 10,
+                      // Padding(
+                      //   padding: const EdgeInsets.only(left: 8.0, top: 8, bottom: 8),
+                      //   child: Text("Mobile", style: TextStyle(
+                      //       fontSize: 16,
+                      //       fontWeight: FontWeight.w600,
+                      //       color: primary
+                      //   ),),
+                      // ),
+                      Padding(
+                        padding: const EdgeInsets.only( bottom: 12),
+                        child: Container(
+                          padding: EdgeInsets.only(left: 15, top: 8, bottom: 4),
+                          height: 50,
+                          decoration: BoxDecoration(
+                              color: white,
+                              borderRadius: BorderRadius.circular(50),
+                              border: Border.all(color: primary)
+                          ),
+                          width: MediaQuery.of(context).size.width,
+                          child: TextFormField(
+                            style: TextStyle(color: Colors.black),
+                            keyboardType: TextInputType.number,
+                            maxLength: 10,
+                            controller: mobileController,
+                            decoration: InputDecoration(
+                                counterText: '',
+                                border: InputBorder.none,
+                                hintText: "Mobile Number"
+                            ),
+                          ),
+                        ),
                       ),
+                      // AuthTextField(
+                      //   obsecureText: false,
+                      //   controller: mobileController,
+                      //   hintText: "Mobile Number",
+                      //   keyboardtype: TextInputType.number,
+                      //   length: 10,
+                      // ),
 
                       Padding(
                         padding: const EdgeInsets.only(top: 30.0, left: 8, right: 8, bottom: 15),
@@ -692,7 +826,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                           style: ElevatedButton.styleFrom(
                               primary: primary,
                               shape: StadiumBorder(),
-                              fixedSize: Size(MediaQuery.of(context).size.width, 50)),
+                              fixedSize: Size(MediaQuery.of(context).size.width, 40)),
                         ),
                       ),
 
@@ -701,7 +835,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                         children: [
                           Text("Don't have an account?  ", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),),
                           TextButton(onPressed: (){
-
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => RestroSignUp()));
                           }, child: Text("Sign Up", style: TextStyle(
                             color: primary,
                             fontSize: 16, fontWeight: FontWeight.w600

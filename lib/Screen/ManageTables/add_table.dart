@@ -1,13 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:eshopmultivendor/Helper/Color.dart';
 import 'package:eshopmultivendor/Helper/Session.dart';
 import 'package:eshopmultivendor/Helper/String.dart';
 import 'package:eshopmultivendor/Model/NewModel/table_type_model.dart';
-import 'package:eshopmultivendor/Screen/Media.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -173,7 +172,7 @@ class _AddTableState extends State<AddTable> {
       String msg = result['message'];
       if(!error) {
         Fluttertoast.showToast(msg: msg);
-        Navigator.pop(context);
+        Navigator.pop(context, 'true');
       }else{
 
       }
@@ -187,10 +186,119 @@ class _AddTableState extends State<AddTable> {
     }
   }
 
+  selectImage() async {
+    PickedFile? pickedFile = await ImagePicker().getImage(
+      source: ImageSource.gallery,
+    );
+    if (pickedFile != null) {
+      setState(() {
+        tableImage = File(pickedFile.path);
+        // imagePath = File(pickedFile.path) ;
+        // filePath = imagePath!.path.toString();
+      });
+    }
+  }
+
+  _selectImage(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: const Text('Add Table Image'),
+            children: [
+              SimpleDialogOption(
+                padding: const EdgeInsets.all(20),
+                child: const Text('Click Image from Camera'),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  PickedFile? pickedFile = await ImagePicker().getImage(
+                    source: ImageSource.camera,
+                    maxHeight: 240.0,
+                    maxWidth: 240.0,
+                  );
+                  if (pickedFile != null) {
+                    setState(() {
+                      tableImage = File(pickedFile.path);
+                      // imagePath = File(pickedFile.path) ;
+                      // filePath = imagePath!.path.toString();
+                    });
+                    print("profile pic from camera ${tableImage}");
+                  }
+                },
+              ),
+              SimpleDialogOption(
+                padding: const EdgeInsets.all(20),
+                child: const Text('Choose image from gallery'),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  selectImage();
+                  // getFromGallery();
+                  // setState(() {
+                  //   // _file = file;Start
+                  // });
+                },
+              ),
+              // SimpleDialogOption(
+              //   padding: const EdgeInsets.all(20),
+              //   child: const Text('Choose Video from gallery'),
+              //   onPressed: () {
+              //     Navigator.of(context).pop();
+              //   },
+              // ),
+
+              // SimpleDialogOption(
+              //   padding: const EdgeInsets.all(20),
+              //   child: const Text('Cancel'),
+              //   onPressed: () {
+              //     Navigator.of(context).pop();
+              //   },
+              // ),
+            ],
+          );
+        });
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return
+      WillPopScope(
+          onWillPop: () async {
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Confirm Exit"),
+                    content: Text("Are you sure you want to exit?"),
+                    actions: <Widget>[
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            primary: primary
+                        ),
+                        child: Text("YES"),
+                        onPressed: () {
+                          SystemNavigator.pop();
+                        },
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            primary: primary
+                        ),
+                        child: Text("NO"),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      )
+                    ],
+                  );
+                }
+            );
+            return true;
+          },
+          child:
+
+          Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(80),
         child: AppBar(
@@ -209,19 +317,36 @@ class _AddTableState extends State<AddTable> {
       SingleChildScrollView(
         child: Form(
           child: Padding(
-            padding: const EdgeInsets.only(left: 25.0, right: 25, top: 25),
+            padding: const EdgeInsets.only(left: 25.0, right: 25, top: 10),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/images/restaurant.png', height: 40, width: 40,),
+                    const SizedBox(width: 10,),
+                    Text("Add Tables", style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.w600),),
+                  ],
+                ),
                 // widget.data!.subList != null ?
                 Padding(
-                    padding: const EdgeInsets.only(top: 12, bottom: 12),
+                  padding: const EdgeInsets.only(left: 8.0, top: 8, bottom: 5),
+                  child: Text("Table Type", style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: primary
+                  ),),
+                ),
+                Padding(
+                    padding: const EdgeInsets.only( bottom: 8),
                     child: Container(
                       padding: EdgeInsets.all(8),
                       height: 50,
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
                           color: white,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(80),
                           border: Border.all(color: primary)
                       ),
                       child: DropdownButtonHideUnderline(
@@ -251,63 +376,98 @@ class _AddTableState extends State<AddTable> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(top: 12, bottom: 12),
-                      child: Container(
-                        padding: EdgeInsets.all(8),
-                        height: 50,
-                        decoration: BoxDecoration(
-                            color: white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: primary)
-                        ),
-                        width: MediaQuery.of(context).size.width/2-30,
-                        child: TextFormField(
-                          style: TextStyle(color: Colors.black),
-                          controller: tableAmountController,
-                          keyboardType: TextInputType.number,
-                          maxLength: 10,
-                          decoration: InputDecoration(
-                              suffix: Text("₹"),
-                              counterText: '',
-                              border: InputBorder.none,
-                              hintText: "Table Amount"
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0, bottom: 5),
+                            child: Text("Table Amount", style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: primary
+                            ),),
                           ),
-                        ),
+                          Container(
+                            padding: EdgeInsets.all(8),
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: white,
+                                borderRadius: BorderRadius.circular(80),
+                                border: Border.all(color: primary)
+                            ),
+                            width: MediaQuery.of(context).size.width/2-30,
+                            child: TextFormField(
+                              style: TextStyle(color: Colors.black),
+                              controller: tableAmountController,
+                              keyboardType: TextInputType.number,
+                              maxLength: 10,
+                              decoration: InputDecoration(
+                                  suffix: Text("₹"),
+                                  counterText: '',
+                                  border: InputBorder.none,
+                                  hintText: "Table Amount"
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 12, bottom: 12),
-                      child: Container(
-                        padding: EdgeInsets.all(8),
-                        height: 50,
-                        decoration: BoxDecoration(
-                            color: white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: primary)
-                        ),
-                        width: MediaQuery.of(context).size.width/2-30,
-                        child: TextFormField(
-                          style: TextStyle(color: Colors.black),
-                          keyboardType: TextInputType.number,
-                          maxLength: 10,
-                          controller: tableCountController,
-                          decoration: InputDecoration(
-                              counterText: '',
-                              border: InputBorder.none,
-                              hintText: "Table Count"
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0,  bottom: 5),
+                            child: Text("Table Count", style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: primary
+                            ),),
                           ),
-                        ),
+                          Container(
+                            padding: EdgeInsets.all(8),
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: white,
+                                borderRadius: BorderRadius.circular(80),
+                                border: Border.all(color: primary)
+                            ),
+                            width: MediaQuery.of(context).size.width/2-30,
+                            child: TextFormField(
+                              style: TextStyle(color: Colors.black),
+                              keyboardType: TextInputType.number,
+                              maxLength: 10,
+                              controller: tableCountController,
+                              decoration: InputDecoration(
+                                  counterText: '',
+                                  border: InputBorder.none,
+                                  hintText: "Table Count"
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
+
                 Padding(
-                  padding: const EdgeInsets.only(top: 12, bottom: 12),
+                  padding: const EdgeInsets.only(left: 8.0, top: 8, bottom: 8),
+                  child: Text("Benefits", style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: primary
+                  ),),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only( bottom: 12),
                   child: Container(
                     padding: EdgeInsets.all(8),
                     height: 80,
                     decoration: BoxDecoration(
                         color: white,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(80),
                         border: Border.all(color: primary)
                     ),
                     width: MediaQuery.of(context).size.width,
@@ -326,7 +486,8 @@ class _AddTableState extends State<AddTable> {
                 ),
                 ElevatedButton(
                     onPressed: (){
-                  requestPermission(context);
+                      _selectImage(context);
+                  // requestPermission(context);
                 },
                     style: ElevatedButton.styleFrom(primary: primary, shape: StadiumBorder()),
                     child: Text("Upload Images", style: TextStyle(
@@ -386,6 +547,7 @@ class _AddTableState extends State<AddTable> {
           ),
         ),
       ),
+    )
     );
   }
 }

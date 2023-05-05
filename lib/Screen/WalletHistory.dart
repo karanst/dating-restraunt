@@ -81,6 +81,7 @@ class _WalletHistoryState extends State<WalletHistory>
   List<WalletTransactions> walletTransactions = [];
 
   getWalletTransactions() async{
+
     CUR_USERID = await getPrefrence(Id);
     var headers = {
       'Cookie': 'ci_session=aa83f4f9d3335df625437992bb79565d0973f564'
@@ -99,6 +100,7 @@ class _WalletHistoryState extends State<WalletHistory>
       var result = json.decode(str);
       var finalResponse = WalletTransactionsModel.fromJson(result);
       setState(() {
+        _isLoading = false;
         walletTransactions = finalResponse.data!;
       });
       print("this is referral data ${walletTransactions.length}");
@@ -129,9 +131,7 @@ class _WalletHistoryState extends State<WalletHistory>
   }
 
   addMoneyWallet() async{
-
     CUR_USERID = await getPrefrence(Id);
-
     var headers = {
       // 'Token': jwtToken.toString(),
       // 'Authorisedkey': authKey.toString(),
@@ -153,7 +153,8 @@ class _WalletHistoryState extends State<WalletHistory>
       var result = json.decode(str);
       Navigator.pop(context);
       Fluttertoast.showToast(msg: result['message'].toString());
-      _refresh();
+      // _refresh();
+      getWalletTransactions();
 
     }
     else {
@@ -732,7 +733,8 @@ class _WalletHistoryState extends State<WalletHistory>
           IconButton(
             icon: Icon(Icons.refresh, color: primary, size: 30,),
             onPressed: (){
-              _refresh();
+              getWalletTransactions();
+              // _refresh();
             },
           ),
         ],
@@ -748,7 +750,7 @@ class _WalletHistoryState extends State<WalletHistory>
                     child: Column(
                       children: [
                         getBalanceShower(),
-                        walletTransactions.length == 0
+                        walletTransactions.isEmpty
                             ? Center(
                                 child: Text(
                                   getTranslated(context, "noItem")!,
@@ -756,16 +758,16 @@ class _WalletHistoryState extends State<WalletHistory>
                               )
                             : ListView.builder(
                                 shrinkWrap: true,
-                                itemCount: (offset < total)
-                                    ? walletTransactions.length + 1
-                                    : walletTransactions.length,
+                                itemCount:  walletTransactions.length,
                                 physics: NeverScrollableScrollPhysics(),
                                 itemBuilder: (context, index) {
-                                  return (index == walletTransactions.length &&
-                                          isLoadingmore)
-                                      ? Center(
-                                          child: CircularProgressIndicator())
-                                      : listItem(index);
+                                  return
+                                    // (index == walletTransactions.length &&
+                                    //       isLoadingmore)
+                                    //   ? Center(
+                                    //       child: CircularProgressIndicator())
+                                    //   :
+                                  listItem(index);
                                 },
                               ),
                       ],
@@ -834,87 +836,94 @@ class _WalletHistoryState extends State<WalletHistory>
       back = Colors.yellow;
     else
       back = red;
-    return Card(
-      elevation: 0,
-      margin: EdgeInsets.all(5.0),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(4),
-        child: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-
-            ],
-          )
-
-          // Column(
-          //   crossAxisAlignment: CrossAxisAlignment.start,
-          //   children: <Widget>[
-          //     Row(
-          //       mainAxisSize: MainAxisSize.min,
-          //       children: <Widget>[
-          //         Text(
-          //           getTranslated(context, "AMT_LBL")! +
-          //               " : " +
-          //               CUR_CURRENCY +
-          //               " " +
-          //               walletTransactions[index].amount!,
-          //           style: TextStyle(color: black, fontWeight: FontWeight.bold),
-          //         ),
-          //         Spacer(),
-          //         Text(walletTransactions[index].dateCreated!),
-          //         // Text(tranList[index].
-          //         // ),
-          //
-          //       ],
-          //     ),
-          //     Divider(),
-          //     Row(
-          //       mainAxisSize: MainAxisSize.min,
-          //       children: <Widget>[
-          //         Text(
-          //           getTranslated(context, "ID_LBL")! +
-          //               " : " +
-          //               walletTransactions[index].id!,
-          //         ),
-          //         Spacer(),
-          //         Container(
-          //           margin: EdgeInsets.only(left: 8),
-          //           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-          //           decoration: BoxDecoration(
-          //             color: back,
-          //             borderRadius: new BorderRadius.all(
-          //               const Radius.circular(4.0),
-          //             ),
-          //           ),
-          //           child: walletTransactions[index].status == "1"
-          //               ? Text("Completed",
-          //             style: TextStyle(color: white),
-          //           )
-          //               : Text(
-          //             "Pending",
-          //             style: TextStyle(color: white),
-          //           ),
-          //         )
-          //       ],
-          //     ),
-          //     // walletTransactions[index].paymentAddress != null &&
-          //     //     walletTransactions[index].paymentAddress!.isNotEmpty
-          //     //     ? Text(getTranslated(context, "PaymentAddress")! +
-          //     //         " : " +
-          //     //         tranList[index].paymentAddress! +
-          //     //         ".")
-          //     //     : Container(),
-          //     // tranList[index].paymentType != null &&
-          //     //         tranList[index].paymentType!.isNotEmpty
-          //     //     ? Text(getTranslated(context, "PaymentType")! +
-          //     //         " : " +
-          //     //         tranList[index].paymentType!)
-          //     //     : Container(),
-          //   ],
-          // ),
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Container(
+        // padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: white,
+          border: Border.all(color: primary, width: 2),
+          borderRadius: BorderRadius.circular(15)
         ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.only(right: 10, top: 5, bottom: 5),
+              decoration: BoxDecoration(
+                color: primary,
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(13), topRight: Radius.circular(13))
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(walletTransactions[index].dateCreated!,  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14, ),),
+                ],
+              ),
+            ),
+            // Text(tranList[index].
+            // ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Image.asset('assets/images/transactions.png', height: 50, width: 50,),
+                  Text(
+                    walletTransactions[index].message.toString(),
+                    style: TextStyle(color: black, fontWeight: FontWeight.normal, fontSize: 14, ),
+                  ),
+                  Text(
+                        "₹ " +
+                        walletTransactions[index].amount!,
+                    style: TextStyle(color: black, fontWeight: FontWeight.bold, fontSize: 24),
+                  ),
+
+                ],
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(right: 8, bottom: 8),
+                   padding: EdgeInsets.only(top: 4, bottom: 4, left: 8, right: 8),
+                  decoration: BoxDecoration(
+                    color: back,
+                    borderRadius: new BorderRadius.all(
+                      const Radius.circular(4.0),
+                    ),
+                  ),
+                  child: walletTransactions[index].status == "1"
+                      ? Text("Completed",
+                    style: TextStyle(color: white),
+                  )
+                      : Text(
+                    "Pending",
+                    style: TextStyle(color: white),
+                  ),
+                ),
+              ],
+            )
+              ],
+            ),
       ),
+      //     // walletTransactions[index].paymentAddress != null &&
+      //     //     walletTransactions[index].paymentAddress!.isNotEmpty
+      //     //     ? Text(getTranslated(context, "PaymentAddress")! +
+      //     //         " : " +
+      //     //         tranList[index].paymentAddress! +
+      //     //         ".")
+      //     //     : Container(),
+      //     // tranList[index].paymentType != null &&
+      //     //         tranList[index].paymentType!.isNotEmpty
+      //     //     ? Text(getTranslated(context, "PaymentType")! +
+      //     //         " : " +
+      //     //         tranList[index].paymentType!)
+      //     //     : Container(),
+      //   ],
+      // ),
     );
   }
+
 }

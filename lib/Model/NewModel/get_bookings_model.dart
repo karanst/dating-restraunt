@@ -1,6 +1,6 @@
 /// error : false
 /// message : "Booking Lists Successfully!"
-/// data : [{"table_name":"High Top Table","restaurant_owner_name":"Shiva","id":"5","unique_id":"1234","res_id":"76","table_type":"1","approx_amount":"500","status":"1","created_at":"2023-04-26 12:55:08","update_at":"2023-04-26 12:55:08","booking_status":"Processed","users":[{"id":"3","booking_id":"5","user_id":"65","amount":"100","payment_status":"1","created_at":"2023-04-26 12:51:09","update_at":"2023-04-26 12:51:09","detail":{"username":"Sonam","mobile":"9876543213","gender":"female"}},{"id":"4","booking_id":"5","user_id":"66","amount":"100","payment_status":"1","created_at":"2023-04-26 12:58:16","update_at":"2023-04-26 12:58:16","detail":{"username":"Shiva","mobile":"9104698126","gender":"male"}}]}]
+/// data : [{"table_name":"High Top Table","restaurant_owner_name":"Shiva","id":"5","unique_id":"1234","res_id":"76","table_type":"1","approx_amount":"700","status":"2","created_at":"2023-04-28 12:24:05","booking_date":"2023-04-28","booking_time":"20:30:00","update_at":"2023-04-28 12:24:05","booking_status":"Accepted","users":[{"id":"3","booking_id":"5","user_id":"65","amount":"100","payment_status":"1","created_at":"2023-04-26 12:51:09","update_at":"2023-04-26 12:51:09","detail":{"username":"Sonam","mobile":"9876543213","gender":"female"}},{"id":"4","booking_id":"5","user_id":"66","amount":"100","payment_status":"1","created_at":"2023-04-26 12:58:16","update_at":"2023-04-26 12:58:16","detail":{"username":"Shiva","mobile":"9104698126","gender":"male"}}]},{"table_name":"Sofas & Coffee Table","restaurant_owner_name":"Shiva","id":"7","unique_id":"12345","res_id":"76","table_type":"2","approx_amount":"100","status":"1","created_at":"2023-04-28 12:16:45","booking_date":"2023-04-28","booking_time":"20:30:00","update_at":"2023-04-28 12:16:45","booking_status":"Processed","users":[{"id":"5","booking_id":"7","user_id":"69","amount":"100","payment_status":"1","created_at":"2023-04-28 12:01:16","update_at":"2023-04-28 12:01:16","detail":{"username":"Anjli","mobile":"788855588","gender":"female"}},{"id":"6","booking_id":"7","user_id":"68","amount":"100","payment_status":"1","created_at":"2023-04-28 12:01:16","update_at":"2023-04-28 12:01:16","detail":{"username":"Harish","mobile":"7899555588","gender":"male"}}]},{"table_name":"High Top Table","restaurant_owner_name":"Shiva","id":"8","unique_id":"12349","res_id":"76","table_type":"1","approx_amount":"700","status":"1","created_at":"2023-04-28 12:16:37","booking_date":"2023-04-28","booking_time":"20:30:00","update_at":"2023-04-28 12:16:37","booking_status":"Processed","users":[{"id":"7","booking_id":"8","user_id":"91","amount":"100","payment_status":"1","created_at":"2023-04-28 12:03:25","update_at":"2023-04-28 12:03:25","detail":{"username":"Rahul R","mobile":"9875641235","gender":"male"}},{"id":"8","booking_id":"8","user_id":"92","amount":"100","payment_status":"1","created_at":"2023-04-28 12:03:25","update_at":"2023-04-28 12:03:25","detail":{"username":"Rashmi","mobile":"654654656","gender":"female"}}]},{"table_name":"High Top Table","restaurant_owner_name":"Shiva","id":"9","unique_id":"3655","res_id":"76","table_type":"1","approx_amount":"700","status":"1","created_at":"2023-04-28 12:16:17","booking_date":"2023-04-28","booking_time":"20:30:00","update_at":"2023-04-28 12:16:17","booking_status":"Processed","users":[{"id":"9","booking_id":"9","user_id":"88","amount":"100","payment_status":"1","created_at":"2023-04-28 12:13:30","update_at":"2023-04-28 12:13:30","detail":{"username":"Devesh","mobile":"7899666632","gender":"male"}},{"id":"10","booking_id":"9","user_id":"89","amount":"100","payment_status":"1","created_at":"2023-04-28 12:13:30","update_at":"2023-04-28 12:13:30","detail":{"username":"Mohini","mobile":"6633002255","gender":"female"}}]},{"table_name":"Sofas & Coffee Table","restaurant_owner_name":"Shiva","id":"10","unique_id":"8996","res_id":"76","table_type":"2","approx_amount":"100","status":"0","created_at":"2023-04-28 12:11:03","booking_date":"2023-04-28","booking_time":"20:30:00","update_at":"2023-04-28 12:11:03","booking_status":"Waiting","users":[{"id":"11","booking_id":"10","user_id":"93","amount":"100","payment_status":"1","created_at":"2023-04-28 12:18:57","update_at":"2023-04-28 12:18:57","detail":{"username":"Nandni","mobile":"7855558848","gender":"female"}},{"id":"12","booking_id":"10","user_id":"94","amount":"100","payment_status":"1","created_at":"2023-04-28 12:18:57","update_at":"2023-04-28 12:18:57","detail":{"username":"Atul","mobile":"7888554477","gender":"male"}}]}]
 
 class GetBookingsModel {
   GetBookingsModel({
@@ -54,11 +54,13 @@ GetBookingsModel copyWith({  bool? error,
 /// unique_id : "1234"
 /// res_id : "76"
 /// table_type : "1"
-/// approx_amount : "500"
-/// status : "1"
-/// created_at : "2023-04-26 12:55:08"
-/// update_at : "2023-04-26 12:55:08"
-/// booking_status : "Processed"
+/// approx_amount : "700"
+/// status : "2"
+/// created_at : "2023-04-28 12:24:05"
+/// booking_date : "2023-04-28"
+/// booking_time : "20:30:00"
+/// update_at : "2023-04-28 12:24:05"
+/// booking_status : "Accepted"
 /// users : [{"id":"3","booking_id":"5","user_id":"65","amount":"100","payment_status":"1","created_at":"2023-04-26 12:51:09","update_at":"2023-04-26 12:51:09","detail":{"username":"Sonam","mobile":"9876543213","gender":"female"}},{"id":"4","booking_id":"5","user_id":"66","amount":"100","payment_status":"1","created_at":"2023-04-26 12:58:16","update_at":"2023-04-26 12:58:16","detail":{"username":"Shiva","mobile":"9104698126","gender":"male"}}]
 
 class Bookings {
@@ -72,6 +74,8 @@ class Bookings {
       String? approxAmount, 
       String? status, 
       String? createdAt, 
+      String? bookingDate, 
+      String? bookingTime, 
       String? updateAt, 
       String? bookingStatus, 
       List<Users>? users,}){
@@ -84,6 +88,8 @@ class Bookings {
     _approxAmount = approxAmount;
     _status = status;
     _createdAt = createdAt;
+    _bookingDate = bookingDate;
+    _bookingTime = bookingTime;
     _updateAt = updateAt;
     _bookingStatus = bookingStatus;
     _users = users;
@@ -99,6 +105,8 @@ class Bookings {
     _approxAmount = json['approx_amount'];
     _status = json['status'];
     _createdAt = json['created_at'];
+    _bookingDate = json['booking_date'];
+    _bookingTime = json['booking_time'];
     _updateAt = json['update_at'];
     _bookingStatus = json['booking_status'];
     if (json['users'] != null) {
@@ -117,6 +125,8 @@ class Bookings {
   String? _approxAmount;
   String? _status;
   String? _createdAt;
+  String? _bookingDate;
+  String? _bookingTime;
   String? _updateAt;
   String? _bookingStatus;
   List<Users>? _users;
@@ -129,6 +139,8 @@ Bookings copyWith({  String? tableName,
   String? approxAmount,
   String? status,
   String? createdAt,
+  String? bookingDate,
+  String? bookingTime,
   String? updateAt,
   String? bookingStatus,
   List<Users>? users,
@@ -141,6 +153,8 @@ Bookings copyWith({  String? tableName,
   approxAmount: approxAmount ?? _approxAmount,
   status: status ?? _status,
   createdAt: createdAt ?? _createdAt,
+  bookingDate: bookingDate ?? _bookingDate,
+  bookingTime: bookingTime ?? _bookingTime,
   updateAt: updateAt ?? _updateAt,
   bookingStatus: bookingStatus ?? _bookingStatus,
   users: users ?? _users,
@@ -154,6 +168,8 @@ Bookings copyWith({  String? tableName,
   String? get approxAmount => _approxAmount;
   String? get status => _status;
   String? get createdAt => _createdAt;
+  String? get bookingDate => _bookingDate;
+  String? get bookingTime => _bookingTime;
   String? get updateAt => _updateAt;
   String? get bookingStatus => _bookingStatus;
   List<Users>? get users => _users;
@@ -169,6 +185,8 @@ Bookings copyWith({  String? tableName,
     map['approx_amount'] = _approxAmount;
     map['status'] = _status;
     map['created_at'] = _createdAt;
+    map['booking_date'] = _bookingDate;
+    map['booking_time'] = _bookingTime;
     map['update_at'] = _updateAt;
     map['booking_status'] = _bookingStatus;
     if (_users != null) {

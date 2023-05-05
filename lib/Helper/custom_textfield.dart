@@ -1,3 +1,4 @@
+import 'package:eshopmultivendor/Helper/Color.dart';
 import 'package:flutter/material.dart';
 
 class AuthTextField extends StatelessWidget {
@@ -23,7 +24,7 @@ class AuthTextField extends StatelessWidget {
             decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(80),
-                border: Border.all(color: Colors.black87),
+                border: Border.all(color: primary),
                 // boxShadow: [
                 //   BoxShadow(
                 //     color: Colors.grey,

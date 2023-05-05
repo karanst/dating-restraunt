@@ -44,7 +44,7 @@ class AppBtn extends StatelessWidget {
             ),
             borderRadius: new BorderRadius.all(
               const Radius.circular(
-                10.0,
+                50.0,
               ),
             ),
           ),

@@ -39,6 +39,7 @@ class _MobileOTPState extends State<VerifyOtp> with TickerProviderStateMixin {
   final dataKey = new GlobalKey();
   String? password, countrycode;
   String? otp;
+  String? oTp;
   bool isCodeSent = false;
   late String _verificationId;
   String signature = "";
@@ -63,6 +64,11 @@ class _MobileOTPState extends State<VerifyOtp> with TickerProviderStateMixin {
       statusBarIconBrightness: Brightness.light,
     ));
     super.initState();
+    if(widget.otp != null){
+      setState(() {
+        oTp = widget.otp;
+      });
+    }
     getUserDetails();
     getSingature();
     // _onVerifyCode();
@@ -379,7 +385,7 @@ class _MobileOTPState extends State<VerifyOtp> with TickerProviderStateMixin {
       padding: const EdgeInsets.only(top: 10.0),
       child: Center(
         child: Text(
-          "${widget.otp}",
+          "${oTp.toString()}",
           style: TextStyle(
             fontSize: 18,
             color: fontColor,
@@ -454,38 +460,7 @@ class _MobileOTPState extends State<VerifyOtp> with TickerProviderStateMixin {
     );
   }
 
-  // expandedBottomView() {
-  //   return Expanded(
-  //     flex: 6,
-  //     child: Container(
-  //       alignment: Alignment.bottomCenter,
-  //       child: SingleChildScrollView(
-  //         physics: BouncingScrollPhysics(),
-  //         child: Card(
-  //           elevation: 0.5,
-  //           shape: RoundedRectangleBorder(
-  //             borderRadius: BorderRadius.circular(10),
-  //           ),
-  //           margin: EdgeInsets.only(
-  //             left: 20.0,
-  //             right: 20.0,
-  //           ),
-  //           child: Column(
-  //             mainAxisSize: MainAxisSize.min,
-  //             children: <Widget>[
-  //               monoVarifyText(),
-  //               otpText(),
-  //               mobText(),
-  //               otpLayout(),
-  //               verifyBtn(),
-  //               resendText(),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
+
 
   resendOtp() async {
     var headers = {
@@ -509,7 +484,11 @@ class _MobileOTPState extends State<VerifyOtp> with TickerProviderStateMixin {
       String msg = result['message'];
       bool error = result['error'];
       if(!error) {
-       int otp = result['otp'];
+        int otp = result['otp'];
+        setState(() {
+          oTp = otp.toString();
+        });
+
         Fluttertoast.showToast(msg: msg.toString());
         // Navigator.pushReplacement(
         //     context, MaterialPageRoute(builder: (context) =>
@@ -706,12 +685,12 @@ class _MobileOTPState extends State<VerifyOtp> with TickerProviderStateMixin {
                               : Text(
                             "Verify and Proceed",
                             style:
-                            TextStyle(color: white, fontWeight: FontWeight.w600, fontSize: 20),
+                            TextStyle(color: white, fontWeight: FontWeight.w500, fontSize: 16),
                           ),
                           style: ElevatedButton.styleFrom(
                               primary: primary,
                               shape: StadiumBorder(),
-                              fixedSize: Size(MediaQuery.of(context).size.width, 50)),
+                              fixedSize: Size(MediaQuery.of(context).size.width, 40)),
                         ),
                       ),
                       // verifyBtn(),

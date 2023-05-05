@@ -24,6 +24,7 @@ import 'package:eshopmultivendor/Screen/OrderList.dart';
 import 'package:eshopmultivendor/Screen/TermFeed/Privacy_Policy.dart';
 import 'package:eshopmultivendor/Screen/ProductList.dart';
 import 'package:eshopmultivendor/Screen/WalletHistory.dart';
+import 'package:eshopmultivendor/Screen/booking_details.dart';
 import 'package:eshopmultivendor/Screen/send_otp.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/gestures.dart';
@@ -91,15 +92,14 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
   List<String> statusList = [
-    ALL,
-    PLACED,
-    PROCESSED,
-    SHIPED,
-    DELIVERD,
-    CANCLED,
-    RETURNED,
-    awaitingPayment
+    'All',
+    'Waiting',
+    'Processing',
+    'Accepted',
+    'Rejected',
+    'Completed'
   ];
+  String selectedDate = '';
 
 //==============================================================================
 //===================================== For Chart ==============================
@@ -214,6 +214,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   }
 
   List<Bookings> bookingList = [];
+  String? categoryValue;
+  String statusValue = '';
 
   getRestroBooking() async{
     CUR_USERID = await getPrefrence(Id);
@@ -222,10 +224,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     };
     var request = http.MultipartRequest('POST', Uri.parse(getBookingsApi.toString()));
     request.fields.addAll({
-      UserId : CUR_USERID.toString()
+      UserId : CUR_USERID.toString(),
+      'status': statusValue.toString(),
+      'booking_date': selectedDate.toString()
     });
 
-    print("this is refer request ${request.fields.toString()}");
+    print("this is restro booking request ${request.fields.toString()}");
+
     request.headers.addAll(headers);
 
     http.StreamedResponse response = await request.send();
@@ -288,7 +293,36 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     // );
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
-    return ScaffoldMessenger(
+    return WillPopScope(
+        onWillPop: () async {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Confirm Exit"),
+              content: Text("Are you sure you want to exit?"),
+              actions: <Widget>[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(primary: primary),
+                  child: Text("YES"),
+                  onPressed: () {
+                    SystemNavigator.pop();
+                  },
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(primary: primary),
+                  child: Text("NO"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
+      return true;
+    },
+    child: ScaffoldMessenger(
       key: scaffoldMessengerKey,
       child: Scaffold(
         key: _scaffoldKey,
@@ -299,6 +333,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         //getBodyPart(),
         //floatingActionButton: floatingBtn(),
       ),
+    )
     );
   }
 
@@ -310,466 +345,669 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         key: _refreshIndicatorKey,
         onRefresh: _refresh,
       child: Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: bookingList.length,
-          itemBuilder: (context, index){
-        return bookingCard(index);
-      }),
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        children: [
+          Card(
+            elevation: 3,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: primary)
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Filter by : ", style: TextStyle(
+                      fontSize: 16, color: Colors.black87,
+                    fontWeight: FontWeight.w600
+                  ),),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment:  CrossAxisAlignment.start,
+                        children: [
+                          Text("Status : ", style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12, color: Colors.black87
+                          ),),
+                          Padding(
+                              padding: const EdgeInsets.only(top: 8, bottom: 8),
+                              child: Container(
+                                padding: EdgeInsets.all(8),
+                                height: 40,
+                                width: MediaQuery.of(context).size.width/2.5 - 10 ,
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: primary)
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton(
+                                    hint: Text('Select Status'), // Not necessary for Option 1
+                                    value: categoryValue,
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        categoryValue = newValue;
+                                      });
+                                      if(categoryValue == "Waiting"){
+                                        setState(() {
+                                          statusValue = '0';
+                                        });
+                                      }else if(categoryValue == "Processing"){
+                                        setState(() {
+                                          statusValue = '1';
+                                        });
+                                      }else if(categoryValue == "Accepted"){
+                                        setState(() {
+                                          statusValue = '2';
+                                        });
+                                      }else if(categoryValue == "Rejected"){
+                                        setState(() {
+                                          statusValue = '3';
+                                        });
+                                      }else if(categoryValue == "Completed"){
+                                        setState(() {
+                                          statusValue = '4';
+                                        });
+                                      }else{
+                                        setState(() {
+                                          statusValue = '';
+                                        });
+                                      }
+
+                                    },
+                                    items: statusList.map((item) {
+                                      return DropdownMenuItem(
+                                        child:  Text(item, style:TextStyle(color: fontColor),),
+                                        value: item,
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              )
+                          ),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment:  CrossAxisAlignment.start,
+                        children: [
+                          Text("Date : ", style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12, color: Colors.black87
+                          ),),
+                          Padding(
+                              padding: const EdgeInsets.only(top: 8, bottom: 8),
+                              child: InkWell(
+                                onTap: () async{
+                                  DateTime? pickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(1950),
+                                      lastDate: DateTime(2100),
+                                      builder: (context,child){
+                                        return Theme(data: Theme.of(context).copyWith(colorScheme: ColorScheme.light(
+                                          primary: primary,
+                                        )), child: child!);
+                                      }
+                                  );
+
+                                  if (pickedDate != null) {
+                                    //pickedDate output format => 2021-03-10 00:00:00.000
+                                    String formattedDate =
+                                    DateFormat('yyyy-MM-dd').format(pickedDate);
+                                    //formatted date output using intl package =>  2021-03-16
+                                    setState(() {
+                                      selectedDate = formattedDate; //set output date to TextField value.
+                                    });
+                                  }
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(8),
+                                  height: 40,
+                                  width: MediaQuery.of(context).size.width/2.5 - 20 ,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(color: primary)
+                                  ),
+                                  child:  selectedDate == null || selectedDate == ''? Center(child: Text("Select date",style: TextStyle(color:  Colors.black87),)) : Center(child: Text("${selectedDate.toString()}",)),
+                                ),
+                              )
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Center(
+                    child: ElevatedButton(
+                        onPressed: (){
+                      getRestroBooking();
+                    }, child: Text("Apply", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),),
+                    style: ElevatedButton.styleFrom(primary: primary, shape: StadiumBorder(), fixedSize: Size(100, 35)),),
+                  )
+
+                ],
+              ),),
+          ),
+          const SizedBox(height: 10,),
+          Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: bookingList.length,
+                itemBuilder: (context, index){
+              return bookingCard(index);
+            }),
+          ),
+        ],
+      ),
     )    )
         : noInternet(context);
   }
 
   Widget bookingCard(int index){
-    return Stack(
-      children: [
-        Container(
-          height: 280,
-          color: Colors.white.withOpacity(0.8),
-          child: Image.asset('assets/images/cardbg.png'),
-        ),
-        Container(
-          height: 280,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            // image: DecorationImage(
-            //   image: ExactAssetImage('assets/images/carbdbg.png'),
-            //   fit: BoxFit.cover
-            // ),
-            borderRadius: BorderRadius.circular(15),
-             color: Colors.white.withOpacity(0.8),
-            border: Border.all(color: primary, width: 2)
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: EdgeInsets.all(10),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15.0),
+      child: InkWell(
+        onTap: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context) => BookingDetails(data: bookingList[index])));
+        },
+        child: Stack(
+          children: [
+            Container(
+              height: 280,
+              color: Colors.white.withOpacity(0.8),
+              child: Image.asset('assets/images/cardbg.png'),
+            ),
+            Container(
+              height: 280,
+              width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
-                color: primary,
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(13), topRight: Radius.circular(13))
+                // image: DecorationImage(
+                //   image: ExactAssetImage('assets/images/carbdbg.png'),
+                //   fit: BoxFit.cover
+                // ),
+                borderRadius: BorderRadius.circular(15),
+                 color: Colors.white.withOpacity(0.8),
+                border: Border.all(color: primary, width: 2)
               ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(bookingList[index].tableName.toString(),
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: white) ),
-                    // String formattedDate = DateFormat('dd MMM yyyy').format(dateTime);
-                    Text(DateFormat('dd MMM yyyy').format(DateTime.parse(bookingList[index].createdAt.toString())).toString(),
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: white) ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0, right: 10, top: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Column(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: primary,
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(13), topRight: Radius.circular(13))
+                  ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Image.asset('assets/images/girl.png', width: 50, height: 50,),
-                        Image.asset('assets/images/boy.png', width: 50, height: 50,),
+                        Text(bookingList[index].tableName.toString(),
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: white) ),
+                        // String formattedDate = DateFormat('dd MMM yyyy').format(dateTime);
+                        Text(DateFormat('dd MMM yyyy').format(DateTime.parse(bookingList[index].createdAt.toString())).toString(),
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: white) ),
                       ],
                     ),
-
-                    const SizedBox(width: 20,),
-                    Column(
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10, top: 10),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            Text("Name : ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: fontColor),),
-
-                            Text(bookingList[index].users![0].detail!.username.toString(),
-                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: fontColor) ),
+                            bookingList[index].users![0].detail!.gender.toString() == "female"?
+                            Image.asset('assets/images/girl.png', width: 50, height: 50,)
+                            : Image.asset('assets/images/boy.png', width: 50, height: 50,),
+                            const SizedBox(width: 20,),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text("Name : ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: fontColor),),
+                                    Text(bookingList[index].users![0].detail!.username.toString(),
+                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: fontColor)),
+                                  ],
+                                ),
+                                const SizedBox(height: 5,),
+                                Row(
+                                  children: [
+                                    Text("Contact No.: ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: fontColor),),
+                                    Text(bookingList[index].users![0].detail!.mobile.toString(),
+                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: fontColor) ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                         const SizedBox(height: 5,),
-                        Row(
+                        bookingList[index].bookingStatus == "Waiting" ?
+                            SizedBox.shrink()
+                        : Row(
                           children: [
-                            Text("Contact No.: ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: fontColor),),
-                            Text(bookingList[index].users![0].detail!.mobile.toString(),
-                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: fontColor) ),
+                            bookingList[index].users![1].detail!.gender.toString() == "female"?
+                            Image.asset('assets/images/girl.png', width: 50, height: 50,)
+                                : Image.asset('assets/images/boy.png', width: 50, height: 50,),
+                            const SizedBox(width: 20,),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text("Name : ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: fontColor),),
+                                    Text(bookingList[index].users![1].detail!.username.toString(),
+                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: fontColor)),
+                                  ],
+                                ),
+                                const SizedBox(height: 5,),
+                                Row(
+                                  children: [
+                                    Text("Contact No.: ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: fontColor),),
+                                    Text(bookingList[index].users![1].detail!.mobile.toString(),
+                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: fontColor) ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                         const SizedBox(height: 5,),
-                        Row(
-                          children: [
-                            Text("Name : ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: fontColor),),
-                            Text(bookingList[index].users![1].detail!.username.toString(),
-                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: fontColor) ),
-                          ],
-                        ),
-                        const SizedBox(height: 5,),
-                        Row(
-                          children: [
-                            Text("Contact No.: ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: fontColor),),
-                            Text(
-                                bookingList[index].users![1].detail!.mobile.toString(),
-                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: fontColor) ),
-                          ],
-                        ),
-                        const SizedBox(height: 5,),
-                        Row(
-                          children: [
-                            Text("Amount : ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: fontColor),),
-                            Text(
-                                '₹ ${bookingList[index].approxAmount.toString()}',
-                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: fontColor) ),
-                          ],
+                        Padding(
+                          padding: const EdgeInsets.only(left: 70.0),
+                          child: Row(
+                            children: [
+                              Text("Amount : ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: fontColor),),
+                              Text(
+                                  '₹ ${bookingList[index].approxAmount.toString()}',
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,  color: fontColor) ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-              // Padding(
-              //   padding: const EdgeInsets.all(10.0),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.start,
-              //     children: [
-              //       Image.asset('assets/images/boy.png', width: 40, height: 40,),
-              //       const SizedBox(width: 40,),
-              //       Column(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           Row(
-              //             children: [
-              //               Text("Name : ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: fontColor),),
-              //               Text(bookingList[index].users![1].detail!.username.toString(),
-              //                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: fontColor) ),
-              //             ],
-              //           ),
-              //           const SizedBox(height: 5,),
-              //           Row(
-              //             children: [
-              //               Text("Contact No.: ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: fontColor),),
-              //               Text(bookingList[index].users![1].detail!.mobile.toString(),
-              //                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: fontColor) ),
-              //             ],
-              //           ),
-              //         ],
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              // Padding(
-              //   padding: const EdgeInsets.all(8.0),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: [
-              //       Row(
-              //         children: [
-              //           Text("Name : ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: fontColor),),
-              //           Text(bookingList[index].users![1].detail!.username.toString(),
-              //               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: primary) ),
-              //         ],
-              //       ),
-              //       Row(
-              //         children: [
-              //           Text("Contact No.: ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: fontColor),),
-              //           Text(bookingList[index].users![1].detail!.mobile.toString(),
-              //               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: primary) ),
-              //         ],
-              //       ),
-              //     ],
-              //   ),
-              // ),
-
-
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //   children: [
-              //     Text("Referral Associate Details: ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: fontColor),),
-              //
-              //     Container(
-              //       width: 100,
-              //       padding: EdgeInsets.all(8),
-              //       decoration: BoxDecoration(
-              //           borderRadius: BorderRadius.circular(10),
-              //           color: bookingList[index].shareInfo.toString() == "1"?
-              //           Colors.green : Colors.red
-              //       ),
-              //       child: Center(
-              //         child: Text(bookingList[index].shareInfo.toString() == "1"?
-              //         "Share"
-              //             : "Do Not Share",
-              //           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),),
-              //       ),
-              //     ),
-              //   ],
-              // ),
-              // const SizedBox(height: 10,),
-              // bookingList[index].shareInfo.toString() == "1" ?
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //   children: [
-              //     Text("Referral Associate : ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: fontColor),),
-              //     Text(bookingList[index].refferFrom.toString(),
-              //         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,  color: primary) ),
-              //   ],
-              // )
-              //     : SizedBox.shrink(),
-              // const SizedBox(height: 10,),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //   children: [
-              //     Text("Remark : ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: fontColor),),
-              //     Container(
-              //       width: 240,
-              //       child: Text(
-              //           bookingList[index].remark == null || bookingList[index].remark.toString() == ''?
-              //           ""
-              //               : bookingList[index].remark.toString(),
-              //           overflow: TextOverflow.ellipsis,
-              //           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,  color: primary) ),
-              //     ),
-              //   ],
-              // ),
-
-              // const SizedBox(height: 10,),
-
-              Spacer(),
-              bookingList[index].status == "1" ?
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: (){
-                      acceptRejectBookingStatus("2", bookingList[index].id.toString());
-                      // showInformationDialog(context, index, bookingList[index]);
-                    }, child: Text("Accept", style: TextStyle(color: white, fontSize: 16, fontWeight: FontWeight.w600),),
-                    style: ElevatedButton.styleFrom(
-                        fixedSize: Size(MediaQuery.of(context).size.width/2 - 60, 35),
-                        primary: primary, shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-
-                    )),
                   ),
-                  ElevatedButton(
-                    onPressed: (){
-                      acceptRejectBookingStatus("3",  bookingList[index].id.toString());
-                      // showInformationDialog(context, index, bookingList[index]);
-                    }, child: Text("Reject", style: TextStyle(color: white, fontSize: 16, fontWeight: FontWeight.w600),),
-                    style: ElevatedButton.styleFrom(
-                        fixedSize: Size(MediaQuery.of(context).size.width/2 - 60, 35),
-                        primary: primary, shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(10.0),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.start,
+                  //     children: [
+                  //       Image.asset('assets/images/boy.png', width: 40, height: 40,),
+                  //       const SizedBox(width: 40,),
+                  //       Column(
+                  //         crossAxisAlignment: CrossAxisAlignment.start,
+                  //         children: [
+                  //           Row(
+                  //             children: [
+                  //               Text("Name : ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: fontColor),),
+                  //               Text(bookingList[index].users![1].detail!.username.toString(),
+                  //                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: fontColor) ),
+                  //             ],
+                  //           ),
+                  //           const SizedBox(height: 5,),
+                  //           Row(
+                  //             children: [
+                  //               Text("Contact No.: ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: fontColor),),
+                  //               Text(bookingList[index].users![1].detail!.mobile.toString(),
+                  //                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: fontColor) ),
+                  //             ],
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //     children: [
+                  //       Row(
+                  //         children: [
+                  //           Text("Name : ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: fontColor),),
+                  //           Text(bookingList[index].users![1].detail!.username.toString(),
+                  //               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: primary) ),
+                  //         ],
+                  //       ),
+                  //       Row(
+                  //         children: [
+                  //           Text("Contact No.: ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: fontColor),),
+                  //           Text(bookingList[index].users![1].detail!.mobile.toString(),
+                  //               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,  color: primary) ),
+                  //         ],
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
 
-                    )),
-                  ),
-                ],
-              ):
-              bookingList[index].status == "2" ?
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: (){
-                      // acceptRejectBookingStatus("2", bookingList[index].id.toString());
-                      // showInformationDialog(context, index, bookingList[index]);
-                    }, child: Text("Complete", style: TextStyle(color: white, fontSize: 16, fontWeight: FontWeight.w600),),
-                    style: ElevatedButton.styleFrom(
-                        fixedSize: Size(MediaQuery.of(context).size.width/2 - 60, 35),
-                        primary: primary, shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
 
-                    )),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     Text("Referral Associate Details: ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: fontColor),),
+                  //
+                  //     Container(
+                  //       width: 100,
+                  //       padding: EdgeInsets.all(8),
+                  //       decoration: BoxDecoration(
+                  //           borderRadius: BorderRadius.circular(10),
+                  //           color: bookingList[index].shareInfo.toString() == "1"?
+                  //           Colors.green : Colors.red
+                  //       ),
+                  //       child: Center(
+                  //         child: Text(bookingList[index].shareInfo.toString() == "1"?
+                  //         "Share"
+                  //             : "Do Not Share",
+                  //           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: 10,),
+                  // bookingList[index].shareInfo.toString() == "1" ?
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     Text("Referral Associate : ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: fontColor),),
+                  //     Text(bookingList[index].refferFrom.toString(),
+                  //         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,  color: primary) ),
+                  //   ],
+                  // )
+                  //     : SizedBox.shrink(),
+                  // const SizedBox(height: 10,),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     Text("Remark : ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: fontColor),),
+                  //     Container(
+                  //       width: 240,
+                  //       child: Text(
+                  //           bookingList[index].remark == null || bookingList[index].remark.toString() == ''?
+                  //           ""
+                  //               : bookingList[index].remark.toString(),
+                  //           overflow: TextOverflow.ellipsis,
+                  //           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,  color: primary) ),
+                  //     ),
+                  //   ],
+                  // ),
+
+                  // const SizedBox(height: 10,),
+
+                  Spacer(),
+                  bookingList[index].status == "1" ?
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: (){
+                          acceptRejectBookingStatus("2", bookingList[index].id.toString());
+                          // showInformationDialog(context, index, bookingList[index]);
+                        }, child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("Accept", style: TextStyle(color: white, fontSize: 14, fontWeight: FontWeight.w600),),
+                            const SizedBox(width: 5,),
+                            Icon(Icons.favorite_outline, color: white,)
+                          ],
+                        ),
+                        style: ElevatedButton.styleFrom(
+                            fixedSize: Size(MediaQuery.of(context).size.width/2 - 60, 35),
+                            primary: primary, shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+
+                        )),
+                      ),
+                      ElevatedButton(
+                        onPressed: (){
+                          acceptRejectBookingStatus("3",  bookingList[index].id.toString());
+                          // showInformationDialog(context, index, bookingList[index]);
+                        }, child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("Reject", style: TextStyle(color: white, fontSize: 14, fontWeight: FontWeight.w600),),
+                          const SizedBox(width: 5,),
+                          Icon(Icons.clear, color: white,)
+                        ],
+                      ),
+                        style: ElevatedButton.styleFrom(
+                            fixedSize: Size(MediaQuery.of(context).size.width/2 - 60, 35),
+                            primary: primary, shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+
+                        )),
+                      ),
+                    ],
+                  ):
+                  bookingList[index].status == "2" ?
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: (){
+
+                          acceptRejectBookingStatus("4", bookingList[index].id.toString());
+                          // showInformationDialog(context, index, bookingList[index]);
+                        }, child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("Complete", style: TextStyle(color: white, fontSize: 14, fontWeight: FontWeight.w600),),
+                          const SizedBox(width: 2,),
+                          Icon(Icons.check_circle_outline, color: white,)
+                        ],
+                      ),
+                        style: ElevatedButton.styleFrom(
+                            fixedSize: Size(MediaQuery.of(context).size.width/2 - 60, 35),
+                            primary: primary, shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+
+                        )),
+                      ),
+                      // ElevatedButton(
+                      //   onPressed: (){
+                      //     acceptRejectBookingStatus("3",  bookingList[index].id.toString());
+                      //     // showInformationDialog(context, index, bookingList[index]);
+                      //   }, child: Text("Reject", style: TextStyle(color: white, fontSize: 16, fontWeight: FontWeight.w600),),
+                      //   style: ElevatedButton.styleFrom(
+                      //       fixedSize: Size(MediaQuery.of(context).size.width/2 - 60, 35),
+                      //       primary: primary, shape: RoundedRectangleBorder(
+                      //     borderRadius: BorderRadius.circular(10),
+                      //
+                      //   )),
+                      // ),
+                    ],
+                  )
+                 : SizedBox.shrink(),
+
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        color: primary,
+                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(13), bottomRight: Radius.circular(13))
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Time : ${bookingList[index].bookingTime.toString()}", style: TextStyle(
+                          color: white,
+                          fontWeight: FontWeight.w600
+                        ),),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10.0),
+                          child: Container(
+                            padding: EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+                            decoration: BoxDecoration(
+                              color: white,
+                              borderRadius: BorderRadius.circular(8)
+                            ),
+                            child: Text(bookingList[index].bookingStatus.toString().toUpperCase(),
+                            style: TextStyle(
+                              color: primary,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16
+                            ),),
+                          ),
+                        ),
+                      ],
+                    ),
+                    // child:
+                    // bookingList[index].bookingStatus.toString() == "1" ?
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    //   children: [
+                    //     ElevatedButton(
+                    //       onPressed: (){
+                    //       // showInformationDialog(context, index, bookingList[index]);
+                    //     }, child: Text("Accept", style: TextStyle(color: primary, fontSize: 16, fontWeight: FontWeight.w600),),
+                    //       style: ElevatedButton.styleFrom(
+                    //           fixedSize: Size(MediaQuery.of(context).size.width/2 - 60, 35),
+                    //           primary: white, shape: RoundedRectangleBorder(
+                    //         borderRadius: BorderRadius.circular(10),
+                    //
+                    //       )),
+                    //     ),
+                    //     ElevatedButton(
+                    //       onPressed: (){
+                    //         // showInformationDialog(context, index, bookingList[index]);
+                    //       }, child: Text("Reject", style: TextStyle(color: primary, fontSize: 16, fontWeight: FontWeight.w600),),
+                    //       style: ElevatedButton.styleFrom(
+                    //           fixedSize: Size(MediaQuery.of(context).size.width/2 - 60, 35),
+                    //           primary: white, shape: RoundedRectangleBorder(
+                    //         borderRadius: BorderRadius.circular(10),
+                    //
+                    //       )),
+                    //     ),
+                    //   ],
+                    // )
+                    // : SizedBox.shrink(),
                   ),
-                  // ElevatedButton(
-                  //   onPressed: (){
-                  //     acceptRejectBookingStatus("3",  bookingList[index].id.toString());
-                  //     // showInformationDialog(context, index, bookingList[index]);
-                  //   }, child: Text("Reject", style: TextStyle(color: white, fontSize: 16, fontWeight: FontWeight.w600),),
+
+                  // Spacer(),
+                  // Divider(
+                  //   thickness: 2,
+                  //   color: secondary,
+                  // ),
+                  // Expanded(
+                  //   child: Padding(
+                  //     padding: const EdgeInsets.only(right: 8.0),
+                  //     child: DropdownButtonFormField(
+                  //       dropdownColor: white,
+                  //       isDense: true,
+                  //       iconEnabledColor: primary,
+                  //       hint: Text(
+                  //         getTranslated(context, "UpdateStatus")!,
+                  //         style: Theme.of(this.context)
+                  //             .textTheme
+                  //             .subtitle2!
+                  //             .copyWith(
+                  //             color: primary,
+                  //             fontWeight: FontWeight.bold),
+                  //       ),
+                  //       decoration: InputDecoration(
+                  //         filled: true,
+                  //         isDense: true,
+                  //         fillColor: white,
+                  //         contentPadding: EdgeInsets.symmetric(
+                  //             vertical: 10, horizontal: 10),
+                  //         enabledBorder: OutlineInputBorder(
+                  //           borderSide: BorderSide(color: primary),
+                  //         ),
+                  //       ),
+                  //       value: orderItem.status,
+                  //       onChanged: (dynamic newValue) {
+                  //         setState(
+                  //               () {
+                  //             orderItem.curSelected = newValue;
+                  //             updateOrder(
+                  //               orderItem.curSelected,
+                  //               updateOrderItemApi,
+                  //               model.id,
+                  //               true,
+                  //               i,
+                  //             );
+                  //           },
+                  //         );
+                  //       },
+                  //       items: statusList.map(
+                  //             (String st) {
+                  //           return DropdownMenuItem<String>(
+                  //             value: st,
+                  //             child: Text(
+                  //               capitalize(st),
+                  //               style: Theme.of(this.context)
+                  //                   .textTheme
+                  //                   .subtitle2!
+                  //                   .copyWith(
+                  //                   color: primary,
+                  //                   fontWeight:
+                  //                   FontWeight.bold),
+                  //             ),
+                  //           );
+                  //         },
+                  //       ).toList(),
+                  //     ),
+                  //   ),
+                  // ),
+                  // statusUpdateWidget(index, bookingList[index]),
+                  // ElevatedButton(onPressed: (){
+                  //   // showInformationDialog(context, index, bookingList[index]);
+                  // }, child: Text("Change Status", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),),
                   //   style: ElevatedButton.styleFrom(
-                  //       fixedSize: Size(MediaQuery.of(context).size.width/2 - 60, 35),
+                  //       fixedSize: Size(MediaQuery.of(context).size.width - 60, 50),
                   //       primary: primary, shape: RoundedRectangleBorder(
                   //     borderRadius: BorderRadius.circular(10),
                   //
                   //   )),
+                  // )
+                  // Container(
+                  //   width: MediaQuery.of(context).size.width,
+                  //   height: 60,
+                  //   child: Row(
+                  //     children: [
+                  //       Container(
+                  //         width: MediaQuery.of(context).size.width/2,
+                  //         height: 60,
+                  //         child: DropdownButton(
+                  //           hint: Text('Select Status'), // Not necessary for Option 1
+                  //           value: categoryValue,
+                  //           onChanged: (String? newValue) {
+                  //             setState(() {
+                  //               categoryValue = newValue;
+                  //             });
+                  //           },
+                  //           items: leadStatus.map((item) {
+                  //             return DropdownMenuItem(
+                  //               child:  Text(item),
+                  //               value: item,
+                  //             );
+                  //           }).toList(),
+                  //         ),
+                  //       ),
+                  //       // Container(
+                  //       //     padding: EdgeInsets.all(8),
+                  //       //     decoration: BoxDecoration(
+                  //       //         color: secondary,
+                  //       //         borderRadius: BorderRadius.circular(10)
+                  //       //     ),
+                  //       //     child: Center(child: Text(bookingList[index].status.toString(), style: TextStyle(fontSize: 14,
+                  //       //         color: Colors.white,
+                  //       //         fontWeight: FontWeight.w600)))),
+                  //     ],
+                  //   ),
                   // ),
                 ],
-              )
-             : SizedBox.shrink(),
-
-              Container(
-                width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: primary,
-                    borderRadius: BorderRadius.only(bottomLeft: Radius.circular(13), bottomRight: Radius.circular(13))
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10.0),
-                      child: Container(
-                        padding: EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: white,
-                          borderRadius: BorderRadius.circular(8)
-                        ),
-                        child: Text(bookingList[index].bookingStatus.toString(),
-                        style: TextStyle(
-                          color: primary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16
-                        ),),
-                      ),
-                    ),
-                  ],
-                ),
-                // child:
-                // bookingList[index].bookingStatus.toString() == "1" ?
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                //   children: [
-                //     ElevatedButton(
-                //       onPressed: (){
-                //       // showInformationDialog(context, index, bookingList[index]);
-                //     }, child: Text("Accept", style: TextStyle(color: primary, fontSize: 16, fontWeight: FontWeight.w600),),
-                //       style: ElevatedButton.styleFrom(
-                //           fixedSize: Size(MediaQuery.of(context).size.width/2 - 60, 35),
-                //           primary: white, shape: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.circular(10),
-                //
-                //       )),
-                //     ),
-                //     ElevatedButton(
-                //       onPressed: (){
-                //         // showInformationDialog(context, index, bookingList[index]);
-                //       }, child: Text("Reject", style: TextStyle(color: primary, fontSize: 16, fontWeight: FontWeight.w600),),
-                //       style: ElevatedButton.styleFrom(
-                //           fixedSize: Size(MediaQuery.of(context).size.width/2 - 60, 35),
-                //           primary: white, shape: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.circular(10),
-                //
-                //       )),
-                //     ),
-                //   ],
-                // )
-                // : SizedBox.shrink(),
               ),
-
-              // Spacer(),
-              // Divider(
-              //   thickness: 2,
-              //   color: secondary,
-              // ),
-              // Expanded(
-              //   child: Padding(
-              //     padding: const EdgeInsets.only(right: 8.0),
-              //     child: DropdownButtonFormField(
-              //       dropdownColor: white,
-              //       isDense: true,
-              //       iconEnabledColor: primary,
-              //       hint: Text(
-              //         getTranslated(context, "UpdateStatus")!,
-              //         style: Theme.of(this.context)
-              //             .textTheme
-              //             .subtitle2!
-              //             .copyWith(
-              //             color: primary,
-              //             fontWeight: FontWeight.bold),
-              //       ),
-              //       decoration: InputDecoration(
-              //         filled: true,
-              //         isDense: true,
-              //         fillColor: white,
-              //         contentPadding: EdgeInsets.symmetric(
-              //             vertical: 10, horizontal: 10),
-              //         enabledBorder: OutlineInputBorder(
-              //           borderSide: BorderSide(color: primary),
-              //         ),
-              //       ),
-              //       value: orderItem.status,
-              //       onChanged: (dynamic newValue) {
-              //         setState(
-              //               () {
-              //             orderItem.curSelected = newValue;
-              //             updateOrder(
-              //               orderItem.curSelected,
-              //               updateOrderItemApi,
-              //               model.id,
-              //               true,
-              //               i,
-              //             );
-              //           },
-              //         );
-              //       },
-              //       items: statusList.map(
-              //             (String st) {
-              //           return DropdownMenuItem<String>(
-              //             value: st,
-              //             child: Text(
-              //               capitalize(st),
-              //               style: Theme.of(this.context)
-              //                   .textTheme
-              //                   .subtitle2!
-              //                   .copyWith(
-              //                   color: primary,
-              //                   fontWeight:
-              //                   FontWeight.bold),
-              //             ),
-              //           );
-              //         },
-              //       ).toList(),
-              //     ),
-              //   ),
-              // ),
-              // statusUpdateWidget(index, bookingList[index]),
-              // ElevatedButton(onPressed: (){
-              //   // showInformationDialog(context, index, bookingList[index]);
-              // }, child: Text("Change Status", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),),
-              //   style: ElevatedButton.styleFrom(
-              //       fixedSize: Size(MediaQuery.of(context).size.width - 60, 50),
-              //       primary: primary, shape: RoundedRectangleBorder(
-              //     borderRadius: BorderRadius.circular(10),
-              //
-              //   )),
-              // )
-              // Container(
-              //   width: MediaQuery.of(context).size.width,
-              //   height: 60,
-              //   child: Row(
-              //     children: [
-              //       Container(
-              //         width: MediaQuery.of(context).size.width/2,
-              //         height: 60,
-              //         child: DropdownButton(
-              //           hint: Text('Select Status'), // Not necessary for Option 1
-              //           value: categoryValue,
-              //           onChanged: (String? newValue) {
-              //             setState(() {
-              //               categoryValue = newValue;
-              //             });
-              //           },
-              //           items: leadStatus.map((item) {
-              //             return DropdownMenuItem(
-              //               child:  Text(item),
-              //               value: item,
-              //             );
-              //           }).toList(),
-              //         ),
-              //       ),
-              //       // Container(
-              //       //     padding: EdgeInsets.all(8),
-              //       //     decoration: BoxDecoration(
-              //       //         color: secondary,
-              //       //         borderRadius: BorderRadius.circular(10)
-              //       //     ),
-              //       //     child: Center(child: Text(bookingList[index].status.toString(), style: TextStyle(fontSize: 14,
-              //       //         color: Colors.white,
-              //       //         fontWeight: FontWeight.w600)))),
-              //     ],
-              //   ),
-              // ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:eshopmultivendor/Helper/ApiBaseHelper.dart';
 import 'package:eshopmultivendor/Helper/AppBtn.dart';
@@ -8,6 +9,7 @@ import 'package:eshopmultivendor/Helper/String.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
 
 class Profile extends StatefulWidget {
@@ -283,7 +285,7 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
     _isNetworkAvail = await isNetworkAvailable();
     if (_isNetworkAvail) {
      await buttonController!.reverse();
-      setUpdateUser();
+     updateRestroData();
     } else {
       Future.delayed(Duration(seconds: 2)).then(
         (_) async {
@@ -323,6 +325,7 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
       STATUS: status ?? "1",
     };
 
+
     apiBaseHelper.postAPICall(updateUserApi, parameter).then(
       (getdata) async {
         bool error = getdata["error"];
@@ -340,6 +343,63 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
         setSnackbar(error.toString());
       },
     );
+  }
+
+  Future<void> updateRestroData() async{
+    CUR_USERID = await getPrefrence(Id);
+    var headers = {
+      'Cookie': 'ci_session=aa83f4f9d3335df625437992bb79565d0973f564'
+    };
+    var request = http.MultipartRequest('POST', Uri.parse(updateUserApi.toString()));
+    request.fields.addAll({
+      Id: CUR_USERID.toString(),
+      Name: name ?? "",
+      Mobile: mobile ?? "",
+      Email: email ?? "",
+      Address: address ?? "",
+      Storename: storename ?? "",
+      Storeurl: storeurl ?? "",
+      storeDescription: storeDesc ?? "",
+      accountNumber: accNo ?? "",
+      accountName: accname ?? "",
+      bankCode: bankcode ?? "",
+      bankName: bankname ?? "",
+      Latitude: latitutute ?? "",
+      Longitude: longitude ?? "",
+      taxName: taxname ?? "",
+      taxNumber: taxnumber ?? "",
+      panNumber: pannumber ?? "",
+      STATUS: status ?? "1",
+
+    });
+    if (_profileImage != null) {
+      request.files.add(
+          await http.MultipartFile.fromPath('store_logo', _profileImage!.path));
+    }
+
+    print("this is restro update request ${request.fields.toString()}");
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String str = await response.stream.bytesToString();
+      var result = json.decode(str);
+      bool error  = result['error'];
+      String msg = result['message'];
+      if(!error) {
+        Fluttertoast.showToast(msg: msg);
+        Navigator.pop(context, 'true');
+      }else{
+
+      }
+      // var finalResponse = TableTypeModel.fromJson(result);
+      // setState(() {
+      //   tableType = finalResponse.data!;
+      // });
+    }
+    else {
+      print(response.reasonPhrase);
+    }
   }
 
 //==============================================================================
@@ -385,13 +445,22 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: _isNetworkAvail
             ? Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   getprofileImage(),
                   getFirstHeader(),
                   getSecondHeader(),
+                  // Padding(
+                  //   padding: const EdgeInsets.only(left: 8.0),
+                  //   child: Text("Bank Details", style: TextStyle(
+                  //     color: black,
+                  //     fontWeight: FontWeight.w600,
+                  //     fontSize: 18
+                  //   ),),
+                  // ),
                   getThirdHeader(),
                   getFurthHeader(),
-                  changePass(),
+                  // changePass(),
                   updateBtn(),
                 ],
               )
@@ -415,8 +484,6 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
     if (pickedFile != null) {
       setState(() {
         _profileImage = File(pickedFile.path);
-        // imagePath = File(pickedFile.path) ;
-        // filePath = imagePath!.path.toString();
       });
     }
   }
@@ -426,7 +493,7 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
         context: context,
         builder: (context) {
           return SimpleDialog(
-            title: const Text('Create a Post'),
+            title: const Text('Update Profile Image'),
             children: [
               SimpleDialogOption(
                 padding: const EdgeInsets.all(20),
@@ -1704,7 +1771,7 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
 
   getThirdHeader() {
     return Padding(
-      padding: const EdgeInsets.only(top: 20, bottom: 5.0),
+      padding: const EdgeInsets.only(top: 10, bottom: 5.0),
       child: Container(
         child: Card(
           elevation: 0,
@@ -1738,7 +1805,7 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
       child: Row(
         children: <Widget>[
           Icon(
-            Icons.format_list_numbered_outlined,
+            Icons.account_balance_wallet_rounded,
             color: primary,
           ),
           Padding(
@@ -1818,7 +1885,7 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
                           child: Padding(
                             padding: EdgeInsets.fromLTRB(20.0, 0, 20.0, 0),
                             child: TextFormField(
-                              keyboardType: TextInputType.text,
+                              keyboardType: TextInputType.number,
                               style: Theme.of(this.context)
                                   .textTheme
                                   .subtitle1!
@@ -2377,8 +2444,8 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
               getDivider(),
               setLongitude(),
               getDivider(),
-              setTaxName(),
-              getDivider(),
+              // setTaxName(),
+              // getDivider(),
               setTaxNumber(),
               getDivider(),
               setPanNumber(),
