@@ -14,6 +14,9 @@ final Uri addRestroTablesApi = Uri.parse(baseUrl + 'add_tables');
 final Uri getTablesListApi = Uri.parse(baseUrl + 'table_lists');
 final Uri restroSignupApi = Uri.parse(baseUrl + 'register_restaurent');
 final Uri deleteTablesApi = Uri.parse(baseUrl + 'delete_table');
+final Uri tableTypeApi = Uri.parse(baseUrl + 'get_tables');
+final Uri getBenefitsApi = Uri.parse(baseUrl + 'get_benefits');
+
 ///NEW APIS/////////////////
 
 final Uri getUserLoginApi = Uri.parse(baseUrl + 'login');

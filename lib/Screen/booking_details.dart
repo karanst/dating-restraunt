@@ -125,7 +125,7 @@ class _BookingDetailsState extends State<BookingDetails> {
 
                 Row(
                   children: [
-                    widget.data!.users![0].detail!.gender.toString() == "female"?
+                    widget.data!.users![0].detail!.gender.toString() == "Female" ||  widget.data!.users![0].detail!.gender.toString() == "female"?
                     Image.asset('assets/images/girl.png', width: 70, height: 70,)
                         : Image.asset('assets/images/boy.png', width: 70, height: 70,),
                     const SizedBox(width: 20,),
@@ -158,7 +158,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                     SizedBox.shrink() :
                 Row(
                   children: [
-                    widget.data!.users![1].detail!.gender.toString() == "female"?
+                    widget.data!.users![1].detail!.gender.toString() == "Female" ||  widget.data!.users![1].detail!.gender.toString() == "female"?
                     Image.asset('assets/images/girl.png', width: 70, height: 70,)
                         : Image.asset('assets/images/boy.png', width: 70, height: 70,),
                     const SizedBox(width: 20,),

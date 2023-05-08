@@ -495,6 +495,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               ),),
           ),
           const SizedBox(height: 10,),
+          bookingList.isNotEmpty?
           Expanded(
             child: ListView.builder(
               shrinkWrap: true,
@@ -502,7 +503,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 itemBuilder: (context, index){
               return bookingCard(index);
             }),
-          ),
+          )
+          : Container(width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.width,
+          child: Center(
+            child: Text("No data found!"),
+          ),),
         ],
       ),
     )    )
@@ -562,7 +568,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       children: [
                         Row(
                           children: [
-                            bookingList[index].users![0].detail!.gender.toString() == "female"?
+                            bookingList[index].users![0].detail!.gender.toString() == "Female" || bookingList[index].users![0].detail!.gender.toString() == "female"?
                             Image.asset('assets/images/girl.png', width: 50, height: 50,)
                             : Image.asset('assets/images/boy.png', width: 50, height: 50,),
                             const SizedBox(width: 20,),
@@ -593,7 +599,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                             SizedBox.shrink()
                         : Row(
                           children: [
-                            bookingList[index].users![1].detail!.gender.toString() == "female"?
+                            bookingList[index].users![1].detail!.gender.toString() == "Female" || bookingList[index].users![1].detail!.gender.toString() == "female"?
                             Image.asset('assets/images/girl.png', width: 50, height: 50,)
                                 : Image.asset('assets/images/boy.png', width: 50, height: 50,),
                             const SizedBox(width: 20,),
@@ -634,6 +640,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       ],
                     ),
                   ),
+
                   // Padding(
                   //   padding: const EdgeInsets.all(10.0),
                   //   child: Row(
@@ -1656,7 +1663,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   Icons.account_balance_wallet_outlined),
               _getDrawerItem(3, getTranslated(context, "WALLET")!,
                   Icons.account_balance_wallet_outlined),
-
               // Divider(),
               // _getDrawerItem(4, getTranslated(context, "PRODUCTS")!,
               //     Icons.production_quantity_limits_outlined),

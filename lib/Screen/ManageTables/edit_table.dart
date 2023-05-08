@@ -5,6 +5,7 @@ import 'package:eshopmultivendor/Helper/Session.dart';
 import 'package:eshopmultivendor/Helper/String.dart';
 import 'package:eshopmultivendor/Model/NewModel/table_type_model.dart';
 import 'package:eshopmultivendor/Model/NewModel/tables_list_model.dart';
+import 'package:eshopmultivendor/Screen/ManageTables/add_table.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +22,32 @@ class EditTable extends StatefulWidget {
 }
 
 class _EditTableState extends State<EditTable> {
+
+
+  List selectedCategoryItems = [];
+  String? selectCatItems;
+  List _selectedItems = [];
+  void _showMultiSelect() async {
+    final List? results = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return MultiSelect();
+        });
+      },
+    );
+
+    // Update UI
+    if (results != null) {
+      setState(() {
+        _selectedItems = results;
+      });
+      selectedCategoryItems = results.map((item) => item.name).toList();
+      selectCatItems = selectedCategoryItems.join(',');
+      print(
+          "this is result == ${_selectedItems.toString()} aaaaand ${selectedCategoryItems.toString()} &&&&&& ${selectCatItems.toString()}");
+    }
+  }
 
   @override
   void initState() {
@@ -164,7 +191,7 @@ class _EditTableState extends State<EditTable> {
       categoryValue.toString() : "",
       'table_amount': tableAmountController.text.toString(),
       'table_count': tableCountController.text.toString(),
-      'table_benefits': benefitsController.text.toString(),
+      'table_benefits': selectCatItems.toString(),
       'id': widget.data!.id.toString()
     });
     if (tableImage != null) {
@@ -368,6 +395,14 @@ class _EditTableState extends State<EditTable> {
                                   setState(() {
                                     categoryValue = newValue;
                                   });
+                                  tableType.forEach((element) {
+                                    if(element.tableType == categoryValue){
+                                      setState(() {
+                                        tableAmountController.text = element.price!;
+                                      });
+                                    }
+                                  });
+                                  //
                                   print("this is tbale selected value $categoryValue");
                                 },
                                 items: tableType.map((item) {
@@ -471,28 +506,55 @@ class _EditTableState extends State<EditTable> {
                             color: primary
                         ),),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only( bottom: 12),
-                        child: Container(
-                          padding: EdgeInsets.all(8),
-                          height: 80,
-                          decoration: BoxDecoration(
-                              color: white,
-                              borderRadius: BorderRadius.circular(80),
-                              border: Border.all(color: primary)
-                          ),
-                          width: MediaQuery.of(context).size.width,
-                          child: TextFormField(
-                            style: TextStyle(color: Colors.black),
-                            keyboardType: TextInputType.text,
-                            // maxLength: 10,
-                            controller: benefitsController,
-                            decoration: InputDecoration(
-                                counterText: '',
-                                border: InputBorder.none,
-                                hintText: "Benefits"
-                            ),
-                          ),
+                      InkWell(
+                        onTap: () {
+                          _showMultiSelect();
+                        },
+                        child: Padding(
+                            padding: const EdgeInsets.only( bottom: 12),
+                            child: Container(
+                                padding: EdgeInsets.all(8),
+                                height: 80,
+                                decoration: BoxDecoration(
+                                    color: white,
+                                    borderRadius: BorderRadius.circular(80),
+                                    border: Border.all(color: primary)
+                                ),
+                                width: MediaQuery.of(context).size.width,
+                                child: _selectedItems.isEmpty
+                                    ? Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 10, top: 20, bottom: 20),
+                                  child: Text(
+                                    'Benefits',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: primary,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                )
+                                    : Wrap(
+                                  children: _selectedItems.map((item) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8),
+                                      child: Chip(
+                                        backgroundColor:
+                                        primary,
+                                        label: Text(
+                                          "${item.name}",
+                                          style: TextStyle(
+                                              color:
+                                              white),
+                                          //item.name
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                )
+                            )
                         ),
                       ),
                       ElevatedButton(
@@ -523,7 +585,7 @@ class _EditTableState extends State<EditTable> {
                         padding: const EdgeInsets.only(top: 20.0, bottom: 30),
                         child: ElevatedButton(
                             onPressed: (){
-                              if(tableAmountController.text.isNotEmpty && tableCountController.text.isNotEmpty && benefitsController.text.isNotEmpty && categoryValue != null){
+                              if(tableAmountController.text.isNotEmpty && tableCountController.text.isNotEmpty && categoryValue != null){
                                 editRestroTables();
                               }else{
                                 Fluttertoast.showToast(msg: "All Fields are required!");
