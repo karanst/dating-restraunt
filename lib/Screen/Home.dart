@@ -26,6 +26,7 @@ import 'package:eshopmultivendor/Screen/ProductList.dart';
 import 'package:eshopmultivendor/Screen/WalletHistory.dart';
 import 'package:eshopmultivendor/Screen/booking_details.dart';
 import 'package:eshopmultivendor/Screen/send_otp.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -149,7 +150,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     orderList.clear();
     // getSaveDetail();
     // getStatics();
-    getSallerDetail();
+     getSallerDetail();
     //  getDeliveryBoy();
     // getZipCodes();
     // getCategories();
@@ -240,6 +241,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       var finalResponse = GetBookingsModel.fromJson(result);
       setState(() {
         bookingList = finalResponse.data!;
+        _isLoading = false;
       });
       print("this is referral data ${bookingList.length}");
       // setState(() {
@@ -329,7 +331,23 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         backgroundColor: lightWhite,
         appBar: getAppBar(context),
         drawer: getDrawer(context),
-        body: bodyWidget()
+        body: bodyWidget(),
+        bottomSheet: double.parse(CUR_BALANCE) <= 500 ? Container(
+          height: 80,
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: primary,
+          ),
+          child: Center(
+            child: Text("Minimum ₹ 500 should be there in wallet to get bookings",
+              style: TextStyle(
+              color: white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600
+            ),),
+          ),
+        ) : SizedBox.shrink(),
         //getBodyPart(),
         //floatingActionButton: floatingBtn(),
       ),
@@ -1782,12 +1800,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             builder: (context) => Profile(),
           ),
         ).then((value) {
-          print("back frome profile screen");
-          getStatics();
+          // print("back frome profile screen");
+          // getStatics();
           getSallerDetail();
           //  getDeliveryBoy();
-          getZipCodes();
-          getCategories();
+          // getZipCodes();
+          // getCategories();
           setState(() {});
           Navigator.pop(context);
         });

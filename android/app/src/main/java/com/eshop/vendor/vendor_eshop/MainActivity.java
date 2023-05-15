@@ -1,4 +1,4 @@
-package com.dating.restro;
+package com.restaurant.blinddate;
 
 import io.flutter.embedding.android.FlutterActivity;
 

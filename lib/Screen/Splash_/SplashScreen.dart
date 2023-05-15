@@ -41,14 +41,20 @@ class _SplashScreenState extends State<SplashScreen> {
     width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: primary,
+      backgroundColor: white,
       key: _scaffoldKey,
       body: Stack(
         children: <Widget>[
+          Image.asset(
+            'assets/images/doodle.png',
+            fit: BoxFit.fill,
+            width: double.infinity,
+            height: double.infinity,
+          ),
           Container(
             width: double.infinity,
             height: double.infinity,
-            decoration: back(),
+            // decoration: back(),
             child: Center(
               child: Image.asset(
                 'assets/images/splashlogo.png',
@@ -57,12 +63,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
           ),
-          Image.asset(
-            'assets/images/doodle.png',
-            fit: BoxFit.fill,
-            width: double.infinity,
-            height: double.infinity,
-          ),
+
         ],
       ),
     );

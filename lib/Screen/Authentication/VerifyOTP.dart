@@ -52,7 +52,32 @@ class _MobileOTPState extends State<VerifyOtp> with TickerProviderStateMixin {
   AnimationController? buttonController;
   bool _isNetworkAvail = true;
 
-  String? id, username, email, mobile   ;
+  String?
+      mobile,
+      username,
+      email,
+      id,
+      balance,
+      image,
+      address,
+      city,
+      area,
+      pincode,
+      fcm_id,
+      srorename,
+      storeurl,
+      storeDesc,
+      accNo,
+      accname,
+      bankCode,
+      bankName,
+      latitutute,
+      longitude,
+      taxname,
+      tax_number,
+      pan_number,
+      status,
+      storeLogo;
   bool loading = false;
 
   @override
@@ -534,39 +559,54 @@ class _MobileOTPState extends State<VerifyOtp> with TickerProviderStateMixin {
         });
         var data = result["data"];
         id = data[Id];
-        username = data[Username];
-        email = data[Email];
-        mobile = data[Mobile];
-        // city = data[City];
-        // area = data[Area];
-        // address = data[Address];
-        // pincode = data[Pincode];
-        // image = data[IMage];
-        // balance = data["balance"];
+
+        address = data[Address];
+        pincode = data[Pincode];
+        image = data[IMage];
+        balance = data["balance"];
+        email = data['email'];
+        mobile = data['mobile'];
         CUR_USERID = id!;
-        CUR_USERNAME = username!;
-        // CUR_BALANCE = balance!;
+        CUR_USERNAME = data[Username]!;
+        CUR_BALANCE = balance!;
+        srorename = data[Storename] ?? "";
+        storeurl = data[Storeurl] ?? "";
+        storeDesc = data[storeDescription] ?? "";
+        accNo = data[accountNumber] ?? "";
+        accname = data[accountName] ?? "";
+        bankCode = data[BankCOde] ?? "";
+        bankName = data[bankNAme] ?? "";
+        latitutute = data[Latitude] ?? "";
+        longitude = data[Longitude] ?? "";
+        taxname = data[taxName] ?? "";
+        tax_number = data[taxNumber] ?? "";
+        pan_number = data[panNumber] ?? "";
+        status = data[STATUS] ?? "";
+        storeLogo = data[StoreLogo] ?? "";
+
         saveUserDetail(
           userId: id!,
-          name: username!,
+          name: CUR_USERNAME!,
           email: email!,
           mobile: mobile!,
-         address: '',
-          storename: '',
-          storeurl: '',
-          storeDesc: '',
-          accNo: '',
-          accname: '',
-          bankCode: '',
-          bankName: '',
-          latitutute: '',
-          longitude: '',
-          taxname: '',
-          tax_number: '',
-          pan_number: '',
-          status: '',
-          storelogo: '',
+          address: address!,
+          storename: srorename!,
+          storeurl: storeurl!,
+          storeDesc: storeDesc!,
+          accNo: accNo!,
+          accname: accname!,
+          bankCode: bankCode ?? "",
+          bankName: bankName ?? "",
+          latitutute: latitutute ?? "",
+          longitude: longitude ?? "",
+          taxname: taxname ?? "",
+          tax_number: tax_number!,
+          pan_number: pan_number!,
+          status: status!,
+          storelogo: storeLogo!,
         );
+
+
         setPrefrenceBool(isLogin, true);
         Navigator.pushReplacement(
           context,

@@ -1,8 +1,8 @@
 final String appName = ' Dating-Restaurant';
 
-final String packageName = 'com.dating.restro';
+final String packageName = 'com.restaurant.blinddate';
 
-final String iosPackage = 'com.dating.restro';
+final String iosPackage = 'com.restaurant.blinddate';
 
 // final String baseUrl = 'https://vendor.eshopweb.store/seller/app/v1/api/';
 

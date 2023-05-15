@@ -27,6 +27,7 @@ class _EditTableState extends State<EditTable> {
   List selectedCategoryItems = [];
   String? selectCatItems;
   List _selectedItems = [];
+
   void _showMultiSelect() async {
     final List? results = await showDialog(
       context: context,
@@ -55,7 +56,7 @@ class _EditTableState extends State<EditTable> {
     getTableTypes();
     if(widget.data != null) {
       setState(() {
-        // categoryValue = widget.data!.name.toString();
+         categoryValue = widget.data!.name.toString();
         tableAmountController = TextEditingController(text: widget.data!.price.toString());
         tableCountController = TextEditingController(text: widget.data!.totalTables.toString());
         benefitsController = TextEditingController(text: widget.data!.benifits.toString());
@@ -191,7 +192,8 @@ class _EditTableState extends State<EditTable> {
       categoryValue.toString() : "",
       'table_amount': tableAmountController.text.toString(),
       'table_count': tableCountController.text.toString(),
-      'table_benefits': selectCatItems.toString(),
+      'table_benefits':_selectedItems.isEmpty
+          ? widget.data!.benifits != null || widget.data!.benifits.toString() !=''? widget.data!.benifits.toString(): '' : selectCatItems.toString(),
       'id': widget.data!.id.toString()
     });
     if (tableImage != null) {
@@ -367,6 +369,24 @@ class _EditTableState extends State<EditTable> {
                           Text("Edit Tables", style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.w600),),
                         ],
                       ),
+                      const SizedBox(height: 10,),
+                      Center(
+                        child: Container(
+                          height: 150,
+                          width: 150,
+                          decoration: BoxDecoration(
+                            // border: Border.all(color: primary, width: 1),
+                            // shape: BoxShape.circle,
+                            borderRadius: BorderRadius.circular(12),
+                            image: DecorationImage(
+                                image: NetworkImage(widget.data!.image.toString()),
+                                fit: BoxFit.fill
+                            ),
+                            // borderRadius: BorderRadius.circular(15)
+                          ),
+                          // child: Image.network(tablesList[index].image.toString(), width: 100, height: 100,)
+                        ),
+                      ),
                       // widget.data!.subList != null ?
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0, top: 8, bottom: 5),
@@ -376,6 +396,7 @@ class _EditTableState extends State<EditTable> {
                             color: primary
                         ),),
                       ),
+
                       Padding(
                           padding: const EdgeInsets.only( bottom: 8),
                           child: Container(
@@ -514,15 +535,30 @@ class _EditTableState extends State<EditTable> {
                             padding: const EdgeInsets.only( bottom: 12),
                             child: Container(
                                 padding: EdgeInsets.all(8),
-                                height: 80,
+                                // height: 80,
                                 decoration: BoxDecoration(
                                     color: white,
                                     borderRadius: BorderRadius.circular(80),
                                     border: Border.all(color: primary)
                                 ),
                                 width: MediaQuery.of(context).size.width,
-                                child: _selectedItems.isEmpty
-                                    ? Padding(
+                                child:
+                                _selectedItems.isEmpty
+                                    ? benefitsController.text.isNotEmpty ?
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 10, top: 20, bottom: 20),
+                                  child: Text(
+                                    benefitsController.text.toString(),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: primary,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ) :
+                                Padding(
                                   padding: const EdgeInsets.only(
                                       left: 10, top: 20, bottom: 20),
                                   child: Text(

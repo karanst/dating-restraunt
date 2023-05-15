@@ -147,8 +147,6 @@ class PushNotificationService {
 //========================= _registerToken =====================================
 
   void _registerToken(String? token) async {
- 
-
     var parameter = {
       'user_id': CUR_USERID,
       FCMID: token,

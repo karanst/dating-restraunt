@@ -508,7 +508,7 @@ class _AddTableState extends State<AddTable> {
                     padding: const EdgeInsets.only( bottom: 12),
                     child: Container(
                         padding: EdgeInsets.all(8),
-                        height: 80,
+                        // height: 80,
                         decoration: BoxDecoration(
                             color: white,
                             borderRadius: BorderRadius.circular(80),

@@ -23,10 +23,15 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
 //==============================================================================
 //========================== Variable Dectlaration =============================
 
-  String? name,
+  String?
+  id,
+  name,
+  balance,
       email,
       mobile,
       address,
+  pincode,
+  bankcode,
       image,
       curPass,
       newPass,
@@ -36,9 +41,11 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
       storename,
       storeurl,
       storeDesc,
+      storeLogo,
+      tax_number,
+      pan_number,
       accname,
       bankname,
-      bankcode,
       latitutute,
       longitude,
       taxname,
@@ -330,7 +337,53 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
       (getdata) async {
         bool error = getdata["error"];
         String? msg = getdata["message"];
+        var data = getdata["data"];
         if (!error) {
+          address = data[Address];
+          pincode = data[Pincode];
+          image = data[IMage];
+          balance = data["balance"];
+          email = data['email'];
+          mobile = data['mobile'];
+          CUR_USERID = id!;
+          CUR_USERNAME = data[Username]!;
+          CUR_BALANCE = balance!;
+          storename = data[Storename] ?? "";
+          storeurl = data[Storeurl] ?? "";
+          storeDesc = data[storeDescription] ?? "";
+          accNo = data[accountNumber] ?? "";
+          accname = data[accountName] ?? "";
+          // bankCode = data[BankCOde] ?? "";
+          // bankName = data[bankNAme] ?? "";
+          latitutute = data[Latitude] ?? "";
+          longitude = data[Longitude] ?? "";
+          taxname = data[taxName] ?? "";
+          tax_number = data[taxNumber] ?? "";
+          pan_number = data[panNumber] ?? "";
+          status = data[STATUS] ?? "";
+          storeLogo = data[StoreLogo] ?? "";
+
+          saveUserDetail(
+            userId: id!,
+            name: CUR_USERNAME!,
+            email: email!,
+            mobile: mobile!,
+            address: address!,
+            storename: storename!,
+            storeurl: storeurl!,
+            storeDesc: storeDesc!,
+            accNo: accNo!,
+            accname: accname!,
+            bankCode: bankCode ?? "",
+            bankName: bankName ?? "",
+            latitutute: latitutute ?? "",
+            longitude: longitude ?? "",
+            taxname: taxname ?? "",
+            tax_number: tax_number!,
+            pan_number: pan_number!,
+            status: status!,
+            storelogo: storeLogo!,
+          );
           await buttonController!.reverse();
           setSnackbar(msg!);
         } else {
@@ -390,7 +443,7 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
         Fluttertoast.showToast(msg: msg);
         Navigator.pop(context, 'true');
       }else{
-
+        Fluttertoast.showToast(msg: msg);
       }
       // var finalResponse = TableTypeModel.fromJson(result);
       // setState(() {
